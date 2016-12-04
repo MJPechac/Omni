@@ -339,6 +339,11 @@ MonoBehaviour:
   thing: {fileID: 795623307}
   gem: {fileID: 626498033}
   gem2: {fileID: 1993448951}
+  gemLayers: 5
+  gemSkin: 0.5
+  gemDensity: 0.5
+  gemStartDistance: 2
+  gemSprite: {fileID: 21300000, guid: 46295edb7a32244d28c7627467aec54d, type: 3}
 --- !u!50 &773639742
 Rigidbody2D:
   serializedVersion: 2

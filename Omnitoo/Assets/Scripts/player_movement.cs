@@ -7,6 +7,7 @@ public class player_movement : MonoBehaviour {
 	public GameObject thing;
 	public GameObject gem;
 	public GameObject gem2;
+	float[] gemRot;
 
 
 
@@ -14,17 +15,24 @@ public class player_movement : MonoBehaviour {
 	private Vector3 heading;
 	private float magnitude;
 	private float startSize;
-
-
+	[Header("Gem Settings")]
+	public int gemLayers = 0;
+	public float gemSkin = .5f;
+	public float gemDensity = .5f;
+	public float gemStartDistance = 5f;
+	public Sprite gemSprite;
+	
 
 	void Start () {
 		startSize = Camera.main.orthographicSize;
 		genSpikes (3,true);
-		genGems (9, 2);
-		genGems (15, 3);
-		genGems (20, 4);
-		genGems (30, 5);
-		genGems (40, 6);
+		//genGems (9, 2);
+		//genGems (15, 3);
+		//genGems (20, 4);
+		//genGems (30, 5);
+		//genGems (40, 6);
+		gemRot = new float[2];
+		genGems(gemLayers);
 	}
 
 	void Update () {
@@ -40,7 +48,69 @@ public class player_movement : MonoBehaviour {
 			transform.GetComponent<Rigidbody2D>().AddForce((heading/heading.sqrMagnitude) * speed * (heading.sqrMagnitude / 10) );
 		}
 	
-	}   
+	}
+	
+	void genGems(int layer)
+	{
+		float extents = 2 * gemSprite.bounds.extents.y;
+		float theta = 0f;
+		float x;
+		float y;
+		float delta;
+		int count;
+
+		GameObject temp;
+		for (int j = 1; j <= layer; j++)
+		{
+			if (j == 1)
+			{
+
+				temp = Instantiate(gem) as GameObject;
+				gemRot[0] = 0f;
+				temp.transform.position = new Vector2(transform.position.x + gemStartDistance, transform.position.y);
+				temp.transform.SetParent(transform);
+
+				temp = Instantiate(gem) as GameObject;
+				gemRot[1] = 2 * Mathf.PI / 3;
+				x = Mathf.Cos(gemRot[1]);
+				y = Mathf.Sin(gemRot[1]);
+				temp.transform.position = new Vector2(transform.position.x + x * gemStartDistance, transform.position.y + y * gemStartDistance);
+				temp.transform.SetParent(transform);
+
+
+				x = Mathf.Cos(4 * Mathf.PI / 3);
+				y = Mathf.Sin(4 * Mathf.PI / 3);
+				temp = Instantiate(gem, new Vector2(x * gemStartDistance + transform.position.x, y * gemStartDistance + transform.position.y), Quaternion.identity) as GameObject;
+				temp.transform.SetParent(transform);
+			}
+			else
+			{
+				delta = gemRot[1] - gemRot[0];
+				
+				float r = j * (gemSkin + extents) - extents / 2 + gemStartDistance;
+				count = (int)((2 * Mathf.PI * r) / extents * .5);
+				float tempTheta = delta / 2;
+				theta = delta / 2;
+				for (int i = 0; i < count; i++)
+				{
+					temp = Instantiate(gem) as GameObject;
+
+					theta = i * 2 * Mathf.PI / count + tempTheta;
+
+					if (i == 0)
+						gemRot[0] = theta;
+					else if (i == 1)
+						gemRot[1] = theta;
+
+					x = Mathf.Cos(theta);
+					y = Mathf.Sin(theta);
+
+					temp.transform.position = new Vector2(x * r + transform.position.x, y * r + transform.position.y);
+					temp.transform.SetParent(transform);
+				}
+			}
+		}
+	}
 		
 	void genGems(int gems, int layer){
 		int offset = 0;
